@@ -421,7 +421,8 @@ function createChannel(io, channelName) {
                 params : [ 'role', 'access_level', 'nick' ],
                 handler : function(dao, dbuser, params) {
                     //disallows setting access level or role too high
-                    if (roles.indexOf(params.role) >= 2 && params.access_level >= 0 && params.access_level <= 10000) {
+                    var level = params.access_level;
+                    if (roles.indexOf(params.role) > 1 && level % 1 === 0 && level > -1 && level < 10000) {
                         var done = $.Deferred();
                         // gets other users stats
                         var other_user = grab(params.nick);
@@ -443,7 +444,7 @@ function createChannel(io, channelName) {
                                 //your roles are equal
                                 else if (roles.indexOf(other_user.role) == roles.indexOf(user.role)) {
                                     //new role must not be above yours
-                                    if (params.access_level < user.access_level) {
+                                    if (level < user.access_level) {
                                         return $.Deferred().resolve(false, msgs.invalidPermissions);
                                     }
                                     //your level must be higher
@@ -459,13 +460,16 @@ function createChannel(io, channelName) {
                                         if (params.role == 'basic') {
                                             delete access[nick];
                                         } else {
-                                            access[nick] = {'role':params.role,'access_level':params.access_level};
+                                            access[nick] = {
+                                                'role' : params.role,
+                                                'access_level' : level
+                                            };
                                         }
                                         dao.setChannelInfo(channelName, 'access', JSON.stringify(access)).then(function() {
                                             channel.online.forEach(function(user) {
                                                 if (user.nick == nick) {
                                                     user.role = params.role;
-                                                    user.access_level = params.access_level;
+                                                    user.access_level = level;
                                                     user.socket.emit('update', {
                                                         access_level : user.access_level.toString(),
                                                         role : user.role
@@ -475,7 +479,7 @@ function createChannel(io, channelName) {
                                             roomEmit('update',{
                                                 access : JSON.stringify(access)
                                             });
-                                            showMessage(msgs.get('role_granted', nick, params.role, params.access_level));
+                                            showMessage(msgs.get('role_granted', nick, params.role, level));
                                         });
                                     });
                                 } else {
@@ -494,7 +498,7 @@ function createChannel(io, channelName) {
                 role : 'god',
                 params : [ 'access_level', 'nick' ],
                 handler : function(dao, dbuser, params) {
-                    if (params.access_level >= 0) {
+                    if (params.access_level > 0 && params.access_level % 1 === 0) {
                         var done = $.Deferred();
                         var permit;
                         return dao.findUser(params.nick).then(function(dbuser) {
