@@ -288,7 +288,7 @@ function createChannel(io, channelName) {
                 }
             },
             purge : {
-                role : 'super',
+                role : 'admin',
                 handler : function(dao, dbuser, params) {
                     var i = 0;
                     while (i < channel.online.length) {
