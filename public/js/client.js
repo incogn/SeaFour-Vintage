@@ -1573,9 +1573,11 @@ parser = {
             return '<div><a href="javascript:void(0)" title = "'+a+'" class="jslink" onclick = "'+a+'">' + b.trim() + '</a></div>';
         });
         /* Replace colors */
+        str = this.multiple(str, /@@([\da-f]{6}|[\da-f]{3})(.+)$/i, '<span style="text-shadow: 0 0 2px #$1; color: transparent;">$2</span>');
         str = this.multiple(str, /&#35;&#35;([\da-f]{6}|[\da-f]{3})(.+)$/i, '<span style="background-color: #$1;">$2</span>');
         str = this.multiple(str, /&#35;([\da-f]{6})([^;].*)$/i, '<span style="color: #$1;">$2</span>');
         str = this.multiple(str, /&#35;([\da-f]{3})([^;](?:..[^;].*|.|..|))$/i, '<span style="color: #$1;">$2</span>');
+        str = this.multiple(str, RegExp('@@(' + this.coloreg + ')(.+)$', 'i'), '<span style="text-shadow: 0 0 2px #$1; color: transparent;">$2</span>');
         str = this.multiple(str, RegExp('&#35;&#35;(' + this.coloreg + ')(.+)$', 'i'), '<span style="background-color: $1;">$2</span>');
         str = this.multiple(str, RegExp('&#35;(' + this.coloreg + ')(.+)$', 'i'), '<span style="color: $1;">$2</span>');
         str = this.multiple(str, this.fontRegex, '<span style="font-family:\'$3\'">$4</span>');
