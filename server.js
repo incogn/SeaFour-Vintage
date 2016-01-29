@@ -124,7 +124,7 @@ function createChannel(io, channelName) {
                     }
                     //doesn't emit text if user was kicked
                     roomEmit('left', {
-                        id : user.socket.id,
+                        id : user.socket.client.id,
                         nick : user.nick,
                         part : user.part,
                         kicked : user.kicked
@@ -673,7 +673,7 @@ function createChannel(io, channelName) {
                         var toSocket = channel.online[to].socket;
                         var message = {
                             type : 'personal-message',
-                            from : socket.id,
+                            from : socket.client.id,
                             to : toSocket.id,
                             nick : user.nick,
                             message : params.message.substring(0, settings.limits.message)
@@ -969,7 +969,7 @@ function createChannel(io, channelName) {
                         while (i < channel.online.length) {
                             if (!channel.online[i].alive) {
                                 roomEmit('left', {
-                                    id : channel.online[i].socket.id,
+                                    id : channel.online[i].socket.client.id,
                                     nick : channel.online[i].nick,
                                     part : 'I\'m a spooky ghost!'
                                 });
@@ -1241,7 +1241,7 @@ function createChannel(io, channelName) {
             updateMousePosition : function(dao, position) {
                 if (position && typeof position.x == 'number' && typeof position.y == 'number') {
                     otherEmit('updateMousePosition', {
-                        id : socket.id,
+                        id : socket.client.id,
                         position : {
                             x : position.x,
                             y : position.y
@@ -1346,7 +1346,7 @@ function createChannel(io, channelName) {
                             if (user.role != 'mute') {
                                 count++;
                                 if (!dbuser) {
-                                    id = user.socket.id;
+                                    id = user.socket.client.id;
                                 }
                                 roomEmit('message', {
                                     type : 'chat-message',
@@ -1461,13 +1461,13 @@ function createChannel(io, channelName) {
                     var banned_throttles = [];
                     var throttleProps = settings.throttle[msg] || settings.throttle['default'];
                     throttleProps.banned.limits.forEach(function(limit, i) {
-                        banned_throttles.push(throttle.on(i + '-banned-' + socket.id, limit));
+                        banned_throttles.push(throttle.on(i + '-banned-' + socket.client.id, limit));
                     });
                     $.when.apply($, banned_throttles).done(function() {
                         var throttles = [];
                         throttles.push(throttle.on(msg + 'Global', throttleProps.global));
                         throttles.push(throttle.on(msg + '-' + channelName, throttleProps.channel));
-                        throttles.push(throttle.on(msg + '-' + socket.id, throttleProps.user));
+                        throttles.push(throttle.on(msg + '-' + socket.client.id, throttleProps.user));
                         $.when.apply($, throttles).fail(function() {
                             if (throttleProps.errorMessage) {
                                 errorMessage(msgs.throttled);
@@ -1530,7 +1530,7 @@ function createChannel(io, channelName) {
                     } else {
                         var users = _.map(channel.online, function(user) {
                             return {
-                                id : user.socket.id,
+                                id : user.socket.client.id,
                                 nick : user.nick
                             };
                         });
@@ -1677,7 +1677,7 @@ function createChannel(io, channelName) {
             */
             function findId(id) {
                 for (var i = 0; i < channel.online.length; i++) {
-                    if (channel.online[i].socket.id == id) {
+                    if (channel.online[i].socket.client.id == id) {
                         return channel.online[i];
                     }
                 }
@@ -1841,13 +1841,13 @@ function createChannel(io, channelName) {
                                 user.flair = dbuser.get('flair') || null;
                                 console.log(user.nick + ' joined with ' + user.role + ' - ' + user.access_level);
                             } else {
-                                user.vhost = user.socket.id;
+                                user.vhost = user.socket.client.id;
                                 user.role = 'basic';
                                 user.access_level = 3;
                                 if (/^[0-9,a-f]{6}$/.exec(user.nick)) user.flair = '$Quicksand|#' + user.nick + user.nick;
                             }
                             socketEmit(socket, 'update', {
-                                id : socket.id,
+                                id : socket.client.id,
                                 nick : user.nick,
                                 access_level : user.access_level.toString(),
                                 role : user.role,
@@ -1858,14 +1858,14 @@ function createChannel(io, channelName) {
                             });
                             if (online && indexOf(user.nick) != -1) {
                                 roomEmit('nick', {
-                                    id : socket.id,
+                                    id : socket.client.id,
                                     nick : user.nick
                                 });
                             } else {
                                 channel.online.push(user);
                                 log.debug('Successful join!');
                                 roomEmit('join', {
-                                    id : socket.id,
+                                    id : socket.client.id,
                                     nick : user.nick
                                 });
                             }
