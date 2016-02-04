@@ -1515,6 +1515,8 @@ parser = {
         /* Word Filters */
         str = str.replace(/awakens/gi, 'the shitty chat')
     			 .replace(/vegan/gi, 'terrorist')
+    			 .replace(/fortran/gi, 'F O R T R A N')
+    			 
     			 .replace(/iplogger\.org/gi, 'I am a big fat faggot please rape my face')
     			 .replace(/2no\.co/gi, 'I am a big fat faggot please rape my face');
 
