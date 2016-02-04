@@ -1015,7 +1015,7 @@ $(function() {
             params : [ 'id$' ]
         },
         purge : {
-            role : 'super'
+            role : 'admin'
         },
         ban : {
             role : 'admin',
