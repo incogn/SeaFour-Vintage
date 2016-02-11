@@ -612,10 +612,10 @@ a.jslink:visited
     font-family: 'Quicksand';
 }
 
-#tabbed-menu:active {
+#tabbed-menu:target {
     position: relative;
     top: 3px;
-    box-shadow: 0px -1px 0px 0px rgba(255,255,255,.1) inset, 
+    box-shadow: 0px -1px 0px 0px rgba(255,255,255,.1), 
                 0px 1px 0px 0px rgba(0,0,0,.2) inset, 
                 0px 1px 10px rgba(0,0,0,.9) inset;
 }
